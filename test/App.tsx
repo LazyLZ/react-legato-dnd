@@ -58,12 +58,16 @@ export default function App() {
         }
 
     }
+
+    const onMouseDown = () => {
+        console.log('onMousedown')
+    }
     return (
         <div style={{maxWidth: '1000px', margin: 'auto', marginTop: '100px', height: '200px', overflow: 'auto'}}>
             <DragContainer lockCrossAxis onOrderChange={onOuterChange}>
                 {items.map(({name, children, groups}, i) => (
                     <Draggable key={name + '-' + i} handler={false}>
-                        <div style={{backgroundColor: '#f2f2f2', display: 'flex'}}>
+                        <div onMouseDown={onMouseDown} style={{backgroundColor: '#f2f2f2', display: 'flex'}}>
                             <Handler>
                                 <div>Handler{name}</div>
                             </Handler>
