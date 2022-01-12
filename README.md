@@ -21,21 +21,28 @@ function Component () {
 ```
 
 ## Bind with Items
+
 ```jsx
 // Hook Component
+import { useEffect } from 'react'
+
 function Component () {
     const [items, setItems] = useState([
         { name: 'Alice' },
         { name: 'Bob' },
         { name: 'Candy' },
     ])
-    const onOrderChange = ({ items: newItems }) => {
-        setItems(newItems)
+    const ref = useRef(items)
+    useEffect(() => {
+        ref.current = items
+    })
+    const onOrderChange = ({ order }) => {
+        setItems(order.map(i => ref.current[i]))
     }
     return (
         <DragContainer items={items} onOrderChange={onOrderChange}>
             {items.map(({ name }) => (
-                <Draggable>{name}</Draggable>
+                <Draggable key={name}>{name}</Draggable>
             ))}
         </DragContainer>
     )
