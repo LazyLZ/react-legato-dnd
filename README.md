@@ -1,9 +1,11 @@
 # React Legato DnD
 
-React hook component for Legato Dnd
+React hook component for [Legato Dnd](https://github.com/LazyLZ/legato-dnd).
+
+See legato-dnd docs for option and event descriptions.
+
 
 ## Basic Usage
-
 ```jsx
 import { DragContainer, Draggable } from 'react-legato-dnd'
 
@@ -19,7 +21,6 @@ function Component () {
 ```
 
 ## Bind with Items
-
 ```jsx
 // Hook Component
 function Component () {
@@ -40,7 +41,17 @@ function Component () {
     )
 }
 
+```
 
-
-
+## types
+```typescript
+export interface ContainerComponentProps {
+    style?: CSSProperties,
+    className?: string,
+    children?: ReactNode,
+    onDragStart?: Handler<DragStartEvent>,
+    // all events in legato-dnd is supported
+}
+// all options in legato-dnd is supported
+export type ContainerPropTypes = ContainerComponentProps & Omit<DragDropProps, 'container'>
 ```
