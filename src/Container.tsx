@@ -1,35 +1,44 @@
-import { ReactNode, useEffect, useRef, useState, forwardRef, CSSProperties } from 'react'
-import { DragDrop, DragDropProps } from 'legato-dnd'
+import {ReactNode, useEffect, useRef, useState, forwardRef, CSSProperties} from 'react'
+import {
+    BeforeDragStartEvent, BeforeDropEvent, DragCrossEvent,
+    DragDrop,
+    DragDropProps, DragEndEvent, DragOverEvent,
+    DragStartEvent, DropEvent,
+    EnterContainerEdgeEvent,
+    EnterViewportEdgeEvent,
+    LeaveContainerEdgeEvent,
+    LeaveViewportEdgeEvent, OrderChangeEvent,
+    ProgrammingScrollEndEvent,
+    ProgrammingScrollErrorEvent,
+    ProgrammingScrollEvent,
+    ProgrammingScrollStartEvent,
+} from 'legato-dnd'
 import mergeRefs from 'react-merge-refs'
+import {Simulate} from 'react-dom/test-utils'
+import drag = Simulate.drag
 // TODO 使用Class Component重写
-export interface DragStartHandlerProps {
-    index: number
-}
-
-export interface DragCrossHandlerProps {
-    order: number[],
-    from: number,
-    current: number,
-    oldCurrent: number,
-    items: any[],
-}
-
-export interface OrderChangeHandlerProps<T> {
-    order: number[],
-    from: number,
-    to: number,
-    items: T[],
-}
+export type Handler<Event> = (event: Event) => void
 
 export interface ContainerComponentProps {
     style?: CSSProperties,
     className?: string,
-    children: ReactNode,
-    items?: any[],
-    onOrderChange?: (props: OrderChangeHandlerProps<any>) => void
-    onDragStart?: (props: DragStartHandlerProps) => void
-    onDragEnd?: () => void
-    onDragCross?: (props: DragCrossHandlerProps) => void
+    children?: ReactNode,
+    onEnterViewportEdge?: Handler<EnterViewportEdgeEvent>,
+    onLeaveViewportEdge?: Handler<LeaveViewportEdgeEvent>,
+    onEnterContainerEdge?: Handler<EnterContainerEdgeEvent>,
+    onLeaveContainerEdge?: Handler<LeaveContainerEdgeEvent>,
+    onProgrammingScrollStart?: Handler<ProgrammingScrollStartEvent>,
+    onProgrammingScrollEnd?: Handler<ProgrammingScrollEndEvent>,
+    onProgrammingScroll?: Handler<ProgrammingScrollEvent>,
+    onProgrammingScrollError?: Handler<ProgrammingScrollErrorEvent>,
+    onBeforeDragStart?: Handler<BeforeDragStartEvent>,
+    onDragStart?: Handler<DragStartEvent>,
+    onDragOver?: Handler<DragOverEvent>,
+    onDragCross?: Handler<DragCrossEvent>,
+    onBeforeDrop?: Handler<BeforeDropEvent>,
+    onDrop?: Handler<DropEvent>,
+    onDragEnd?: Handler<DragEndEvent>,
+    onOrderChange?: Handler<OrderChangeEvent>
 }
 
 export type ContainerPropTypes = ContainerComponentProps & Omit<DragDropProps, 'container'>
@@ -37,23 +46,29 @@ export type ContainerPropTypes = ContainerComponentProps & Omit<DragDropProps, '
 
 const DragContainer = forwardRef<HTMLDivElement, ContainerPropTypes>(function ({
     className,
-    // vertical = false,
     children,
-    items,
-    onOrderChange,
-    onDragStart,
-    onDragEnd,
-    onDragCross,
     style,
+    onEnterViewportEdge,
+    onLeaveViewportEdge,
+    onEnterContainerEdge,
+    onLeaveContainerEdge,
+    onProgrammingScrollStart,
+    onProgrammingScrollEnd,
+    onProgrammingScroll,
+    onProgrammingScrollError,
+    onBeforeDragStart,
+    onDragStart,
+    onDragOver,
+    onDragCross,
+    onBeforeDrop,
+    onDrop,
+    onDragEnd,
+    onOrderChange,
     ...args
 }, ref) {
     // const ref = useRef(null)
     const [dragDrop, setDragDrop] = useState<DragDrop | null>(null)
-    const itemsRef = useRef(items)
     const divRef = useRef(null)
-    useEffect(() => {
-        itemsRef.current = items
-    })
     useEffect(() => {
         if (dragDrop && args.groups) {
             dragDrop.setGroups(args.groups)
@@ -67,39 +82,30 @@ const DragContainer = forwardRef<HTMLDivElement, ContainerPropTypes>(function ({
             container: divRef.current,
             ...args,
         })
-        d.on('orderChange', ({ order, from, to }: OrderChangeHandlerProps<any>) => {
-            const oldItems = itemsRef.current || []
-            if (onOrderChange) {
-                let newItems: (typeof oldItems) = oldItems || []
-                if (oldItems && oldItems.length === order.length) {
-                    newItems = oldItems.map((t, i) => oldItems[order[i]])
-                }
-                onOrderChange({ order, from, to, items: newItems })
-            }
-        })
-        d.on('dragCross', ({ order, from, current, oldCurrent }: DragCrossHandlerProps) => {
-            const oldItems = itemsRef.current || []
-            if (onDragCross) {
-                let newItems: (typeof oldItems) = oldItems || []
-                if (oldItems && oldItems.length === order.length) {
-                    newItems = oldItems.map((t, i) => oldItems[order[i]])
-                }
-                onDragCross({ order, from, current, items: newItems, oldCurrent })
-            }
-        })
-        d.on('dragStart', ({ index }: DragStartHandlerProps) => {
-            if (onDragStart) {
-                onDragStart({ index })
-            }
-
-        })
-        d.on('dragEnd', () => {
-            if (onDragEnd) {
-                onDragEnd()
+        const entries: ([string, Handler<any> | undefined])[] = [
+            ['enterViewportEdge', onEnterViewportEdge],
+            ['leaveViewportEdge', onLeaveViewportEdge],
+            ['enterContainerEdge', onEnterContainerEdge],
+            ['leaveContainerEdge', onLeaveContainerEdge],
+            ['programmingScrollStart', onProgrammingScrollStart],
+            ['programmingScrollEnd', onProgrammingScrollEnd],
+            ['programmingScroll', onProgrammingScroll],
+            ['programmingScrollError', onProgrammingScrollError],
+            ['beforeDragStart', onBeforeDragStart],
+            ['dragStart', onDragStart],
+            ['dragOver', onDragOver],
+            ['dragCross', onDragCross],
+            ['beforeDrop', onBeforeDrop],
+            ['drop', onDrop],
+            ['dragEnd', onDragEnd],
+            ['orderChange', onOrderChange],
+        ]
+        entries.forEach(([name, handler]) => {
+            if (handler) {
+                d.on(name, handler)
             }
         })
         setDragDrop(d)
-
     }, [ref])
     return (
         <div ref={mergeRefs([ref, divRef])} className={className} style={style}>

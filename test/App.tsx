@@ -1,5 +1,6 @@
-import {DragContainer, Draggable, Handler, OrderChangeHandlerProps} from '../index'
+import {DragContainer, Draggable, Handler} from '../index'
 import {useCallback, useEffect, useRef, useState} from 'react'
+import {OrderChangeEvent} from 'legato-dnd'
 
 interface ItemType {
     name: string,
@@ -41,20 +42,27 @@ export default function App() {
         ref.current = items
     })
 
-    const onOuterChange = ({items: newItems}: OrderChangeHandlerProps<ItemType>) => {
+    const onOuterChange = ({order}: OrderChangeEvent) => {
+        const newItems = order.map(i => ref.current[i])
+        console.log('newItems', newItems)
         setItems(newItems)
     }
-    const onInnerChange = ({items: newItems}: OrderChangeHandlerProps<ItemType>, i: number) => {
+    const onInnerChange = ({order}: OrderChangeEvent, i: number) => {
         const outItems = [...ref.current]
         console.log('outItems', i, outItems.map(t => t.name))
-        outItems[i].children = newItems
-        setItems(outItems)
+        const children = outItems[i].children
+        if (children) {
+            outItems[i].children = order.map(i => children[i])
+
+            setItems(outItems)
+        }
+
     }
     return (
         <div style={{maxWidth: '1000px', margin: 'auto', marginTop: '100px', height: '200px', overflow: 'auto'}}>
-            <DragContainer lockCrossAxis items={items} onOrderChange={onOuterChange}>
+            <DragContainer lockCrossAxis onOrderChange={onOuterChange}>
                 {items.map(({name, children, groups}, i) => (
-                    <Draggable key={i} handler={false}>
+                    <Draggable key={name + '-' + i} handler={false}>
                         <div style={{backgroundColor: '#f2f2f2', display: 'flex'}}>
                             <Handler>
                                 <div>Handler{name}</div>
@@ -62,7 +70,7 @@ export default function App() {
                             {children && children.length && (
                                 <DragContainer
                                     groups={groups}
-                                    lockCrossAxis vertical items={children}
+                                    lockCrossAxis vertical
                                     onOrderChange={e => onInnerChange(e, i)}>
                                     {children.map(({name}) => (
                                         <Draggable key={name} handler={false}>
