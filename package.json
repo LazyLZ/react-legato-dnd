@@ -3,10 +3,10 @@
   "version": "1.0.1",
   "license": "MIT",
   "author": "Lai Zhi",
-  "homepage": "https://github.com/LazyLZ/legato-dnd",
+  "homepage": "https://github.com/LazyLZ/react-legato-dnd",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LazyLZ/legato-dnd"
+    "url": "https://github.com/LazyLZ/react-legato-dnd"
   },
   "keywords": [
     "drag and drop",
