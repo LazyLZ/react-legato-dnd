@@ -695,10 +695,10 @@ jsonc-parser@^3.0.0:
   resolved "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.0.0.tgz#abdd785701c7e7eaca8a9ec8cf070ca51a745a22"
   integrity sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==
 
-legato-dnd@^0.3.10:
-  version "0.3.10"
-  resolved "https://registry.npmjs.org/legato-dnd/-/legato-dnd-0.3.10.tgz#112bde8f95a80207c674a7b801c55ffd95959558"
-  integrity sha512-KgFchf5fC72UX+rMvw3K/2+lDhocwm8mv7lSbyKGj1bOuIZXYlRYI0/lZRRNIOH1G4Ks02wSvDZL+Q4jSfjOqQ==
+legato-dnd@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/legato-dnd/-/legato-dnd-0.3.11.tgz#1e360ef9f14dd92c43c9704d633e060f478cbc2f"
+  integrity sha512-q+5kqZbxC4hLX9fYxhD6HvrYdBlHRiO9+YnNY8La/DADVT7MpQYkFn1RD/L3Q+RHwfpuWyC2+Ei20jKodsrukg==
   dependencies:
     eventemitter3 "^4.0.7"
 
