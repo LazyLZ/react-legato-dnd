@@ -4,6 +4,7 @@ React hook component for [Legato Dnd](https://github.com/LazyLZ/legato-dnd).
 
 See legato-dnd docs for option and event descriptions.
 
+Demo: [Legato Dnd React Demo](https://lazylz.github.io/legato-dnd-react-demo/)
 
 ## Basic Usage
 ```jsx

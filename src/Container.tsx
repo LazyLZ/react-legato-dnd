@@ -1,6 +1,6 @@
 import {ReactNode, useEffect, useRef, useState, forwardRef, CSSProperties} from 'react'
 import {
-    BeforeDragStartEvent, BeforeDropEvent, DragCrossEvent,
+    BeforeDragStartEvent, BeforeDropEvent, DragCanceledEvent, DragCrossEvent,
     DragDrop, DragDropProps, DragEndEvent, DragOverEvent,
     DragStartEvent, DropEvent,
     EnterContainerEdgeEvent,
@@ -12,6 +12,7 @@ import {
     ProgrammingScrollEvent,
     ProgrammingScrollStartEvent,
 } from 'legato-dnd'
+// } from './dist'
 import mergeRefs from 'react-merge-refs'
 import {Simulate} from 'react-dom/test-utils'
 import drag = Simulate.drag
@@ -35,6 +36,7 @@ export interface ContainerComponentProps {
     onDragOver?: Handler<DragOverEvent>,
     onDragCross?: Handler<DragCrossEvent>,
     onBeforeDrop?: Handler<BeforeDropEvent>,
+    onDragCanceled?: Handler<DragCanceledEvent>
     onDrop?: Handler<DropEvent>,
     onDragEnd?: Handler<DragEndEvent>,
     onOrderChange?: Handler<OrderChangeEvent>
@@ -63,6 +65,7 @@ const DragContainer = forwardRef<HTMLDivElement, ContainerPropTypes>(function ({
     onDrop,
     onDragEnd,
     onOrderChange,
+    onDragCanceled,
     ...args
 }, ref) {
     // const ref = useRef(null)
